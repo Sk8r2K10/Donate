@@ -1,0 +1,7 @@
+#uInv configuration file
+Donate:
+  chestlocation:
+    world: world
+    x: 103
+    y: 20
+    z: -4

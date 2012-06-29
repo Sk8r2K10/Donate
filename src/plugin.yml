@@ -1,0 +1,20 @@
+name: Donate
+main: me.Sk8r2K10.Donate.Donate
+author: Sk8r2K10
+version: 0.1a
+description: Donation and redemption plugin
+softdepend: [Vault]
+commands:
+  donate:
+    description: Donate item in hand to Donation vault
+  redeem:
+    description: Redeem an item from Donation vault
+  vlist:
+    description: Returns a list of vault contents (Console only)
+permissions:
+  donate.donate:
+    description: Allows users to donate
+    default: true
+  donate.redeem:
+    description: Allows users to take items from vault
+    default: op
