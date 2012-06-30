@@ -48,6 +48,13 @@ public class Utilities {
         return true;
     }
     
+    public boolean isBlacklisted(String arg) {
+        if (plugin.getConfig().getList("Donate.blacklist.items").contains(arg)) {
+            return true;
+        }
+        return false;
+    }
+    
     public int getInt(String arg) {
         if (this.isInt(arg)) {
             int i = Integer.parseInt(arg);

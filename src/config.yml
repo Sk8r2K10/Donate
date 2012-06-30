@@ -5,3 +5,5 @@ Donate:
     x: 103
     y: 20
     z: -4
+  blacklist:
+    items: [Dirt, TNT]

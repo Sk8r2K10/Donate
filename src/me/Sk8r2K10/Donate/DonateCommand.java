@@ -41,6 +41,10 @@ public class DonateCommand implements CommandExecutor {
                 if (args.length == 0) {
 
 					ItemStack item = player.getItemInHand().clone();
+                    if (plugin.util.isBlacklisted(Items.itemByStack(item).getName())) {
+                        player.sendMessage(plugin.pre + "That Item is blacklisted for donation.");
+                        return false;
+                    }                    
                     if (item.getType().equals(Material.AIR)) {
                         player.sendMessage(plugin.pre + "There's no Item in your hand!");
                         return false;
@@ -69,6 +73,10 @@ public class DonateCommand implements CommandExecutor {
 					try {
 						ItemStack item = player.getItemInHand().clone();
 						int am = plugin.util.getInt(args[0]);
+                        if (plugin.util.isBlacklisted(Items.itemByStack(item).getName())) {
+                            player.sendMessage(plugin.pre + "That Item is blacklisted for donation.");
+                            return false;
+                        }                        
 						if (!(item.getAmount() >= am)) {
 							player.sendMessage(plugin.pre + "You don't have enough of that item");
 							return false;
@@ -97,7 +105,7 @@ public class DonateCommand implements CommandExecutor {
 
 				if (args.length == 2 && plugin.util.isInt(args[1])) {
 					try {
-						if (!plugin.util.isMaterial(args[0], player)) {
+                        if (!plugin.util.isMaterial(args[0], player)) {
 							return false;
 						}
 
@@ -105,7 +113,10 @@ public class DonateCommand implements CommandExecutor {
 							player.sendMessage(plugin.pre + "Amount specified is not a number, or is invalid");
 							return false;
 						}
-
+                        if (plugin.util.isBlacklisted(args[0])) {
+                            player.sendMessage(plugin.pre + "That Item is blacklisted for donation.");
+                            return false;
+                        } 
 
 						ItemStack item = Items.itemByName(args[0]).toStack();
 						int am = plugin.util.getInt(args[1]);
