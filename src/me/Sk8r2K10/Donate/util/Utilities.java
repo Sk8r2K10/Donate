@@ -58,7 +58,7 @@ public class Utilities {
 	
 	public void help(Player player) {
 		
-		player.sendMessage(plugin.pre + " - Help Menu - " + plugin.pre);
+		if (player.hasPermission("donate.donate") || player.hasPermission("donate.redeem")) player.sendMessage(plugin.pre + " - Help Menu");
 		if (player.hasPermission("donate.donate")) player.sendMessage(ChatColor.AQUA + "/donate [item] [amount] - " + ChatColor.GRAY + "Donates item specifed, or item in hand if not specified.");
 		if (player.hasPermission("donate.redeem")) player.sendMessage(ChatColor.AQUA + "/redeem [item] [amount] OR /redeem <list> [page] - " + ChatColor.GRAY + "Redeems, or lists items in Vault.");
 		//Super-happy-modularness

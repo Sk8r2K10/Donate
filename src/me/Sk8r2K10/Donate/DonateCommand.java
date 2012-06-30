@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import me.Sk8r2K10.Donate.util.InventoryManager;
 import net.milkbowl.vault.item.Items;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,10 +32,19 @@ public class DonateCommand implements CommandExecutor {
 		}
 
 		if (sender instanceof Player) {
-			if (commandLabel.equalsIgnoreCase("donate") && plugin.util.getPerm(player, "donate.donate")) {
-				if (args.length == 0) {
+			if (commandLabel.equalsIgnoreCase("donate")) {
+                if (!plugin.util.getPerm(player, "donate.donate")) {
+                    
+                    return false;
+                }
+                
+                if (args.length == 0) {
 
 					ItemStack item = player.getItemInHand().clone();
+                    if (item.getType().equals(Material.AIR)) {
+                        player.sendMessage(plugin.pre + "There's no Item in your hand!");
+                        return false;
+                    }                    
 					if (item.getDurability() < item.getType().getMaxDurability()) {
 						player.sendMessage(plugin.pre + "Please don't donate used tools and items!");
 						return false;
@@ -116,8 +126,12 @@ public class DonateCommand implements CommandExecutor {
 				}
 			} 
 
-			if (commandLabel.equalsIgnoreCase("redeem") && plugin.util.getPerm(player, "donate.redeem")) {
-				if (args.length == 2 && !args[0].equalsIgnoreCase("list")) {
+			if (commandLabel.equalsIgnoreCase("redeem")) {
+				if (!plugin.util.getPerm(player, "donate.redeem")) {
+                    
+                    return false;
+                }                
+                if (args.length == 2 && !args[0].equalsIgnoreCase("list")) {
 					try {
 						if (!plugin.util.isMaterial(args[0], player)) {
 							return false;
@@ -207,14 +221,14 @@ public class DonateCommand implements CommandExecutor {
 				if (args.length >= 1 && args[0].equalsIgnoreCase("list")) {
 					try {
 						ResultSet result = plugin.SQL.getVaultContents();
-						player.sendMessage(plugin.pre + "- Vault contents - " + plugin.pre);
+						player.sendMessage(plugin.pre + "- Vault contents");
 						
 						int page = 0;
 						int end = 10;
 																								
 						if (args.length > 1 && plugin.util.isInt(args[1]) && !(plugin.util.getInt(args[1]) <= 1)) {
-							page = (plugin.util.getInt(args[1]) * 10) - 10;
-							end = plugin.util.getInt(args[1]) * 10;
+							page = (plugin.util.getInt(args[1]) * 8) - 8;
+							end = plugin.util.getInt(args[1]) * 8;
 														
 							if (page != 0) {
 								int i = 0;
@@ -252,14 +266,14 @@ public class DonateCommand implements CommandExecutor {
 					return true;
 				}
 			}
-			player.sendMessage(plugin.pre + ChatColor.RED + "Invalid command usage");
+            player.sendMessage(plugin.pre + ChatColor.RED + "Invalid command usage");
+            plugin.util.help(player);
 			return false;
-			
 		} else if (sender instanceof ConsoleCommandSender) {
 			if (commandLabel.equalsIgnoreCase("vlist")) {
 				try {
 					ResultSet result = plugin.SQL.getVaultContents();
-					sender.sendMessage(plugin.pre + "- Vault contents - " + plugin.pre);
+					sender.sendMessage(plugin.pre + "- Vault contents");
 
 					while (result.next()) {
 
