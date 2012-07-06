@@ -26,7 +26,7 @@ public class Utilities {
         return true;
     }
 
-    public boolean isMaterial(String args, Player player) {
+    public boolean isMaterial(String args) {
         if (Items.itemByString(args) != null) { //check if item is null
 
             return true;
@@ -35,7 +35,6 @@ public class Utilities {
 			plugin.log.info("[Donate] Vault may be out of date");
             plugin.log.info("[Donate] Please update Vault to the latest version");
         }
-		if (!(args.equalsIgnoreCase("help") || args.equalsIgnoreCase("list"))) {player.sendMessage(plugin.pre + ChatColor.RED + "The material '" + ChatColor.YELLOW + args + ChatColor.RED + "' is not recognised.");}
         return false;
     }
     
