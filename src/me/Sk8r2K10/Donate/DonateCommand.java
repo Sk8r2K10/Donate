@@ -32,38 +32,42 @@ public class DonateCommand implements CommandExecutor {
 		}
 
 		if (sender instanceof Player) {
-			if (commandLabel.equalsIgnoreCase("donate")) {
-                if (!plugin.util.getPerm(player, "donate.donate")) {
+			if (commandLabel.equalsIgnoreCase("deposit")) {
+                if (!plugin.util.getPerm(player, "deposit.deposit")) {
                     
                     return false;
                 }
-                
+                // Donate hand
                 if (args.length == 0) {
                     this.donate(player);
                     return true;
 				}
-
+                // Donate hand + amount
 				if (args.length == 1 && plugin.util.isInt(args[0])) {
     				int am = plugin.util.getInt(args[0]);
                     this.donate(player, am);
                     return true;
 				}
-
+                // Help command
 				if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
 					plugin.util.help(player);
 					return true;
 				}
-
+                // Donate material + amount
 				if (args.length == 2 && plugin.util.isInt(args[1])) {
                     if (!plugin.util.isMaterial(args[0])) {
-                        player.sendMessage(plugin.pre + ChatColor.RED + "The material '" + ChatColor.YELLOW + args + ChatColor.RED + "' is not recognised.");
+                        player.sendMessage(plugin.pre + ChatColor.RED + "The material '" + ChatColor.YELLOW + args[0] + ChatColor.RED + "' is not recognised.");
                         return false;
                     }
                     if (!plugin.util.isInt(args[1])) {
-                        player.sendMessage(plugin.pre + "Amount specified is not a number, or is invalid");
+                        player.sendMessage(plugin.pre + ChatColor.RED + "Amount specified is not a number, or is invalid.");
                         return false;
                     }
                     ItemStack i = Items.itemByString(args[0]).toStack();
+                    if (!(new InventoryManager(player).contains(i))) {
+                        player.sendMessage(plugin.pre + ChatColor.RED + "You don't have enough of that Item.");
+                        return false;
+                    }
                     i.setAmount(plugin.util.getInt(args[1]));                    
                     this.donate(player, i);
                     return true;
@@ -71,13 +75,14 @@ public class DonateCommand implements CommandExecutor {
 			} 
 
 			if (commandLabel.equalsIgnoreCase("redeem")) {
-				if (!plugin.util.getPerm(player, "donate.redeem")) {
+				if (!plugin.util.getPerm(player, "deposit.redeem")) {
                     
                     return false;
-                }                
+                }          
+                // Redeem material + amount
                 if (args.length == 2 && !args[0].equalsIgnoreCase("list")) {
                     if (!plugin.util.isMaterial(args[0])) {
-                        player.sendMessage(plugin.pre + ChatColor.RED + "The material '" + ChatColor.YELLOW + args + ChatColor.RED + "' is not recognised.");
+                        player.sendMessage(plugin.pre + ChatColor.RED + "The material '" + ChatColor.YELLOW + args[0] + ChatColor.RED + "' is not recognised.");
                         return false;
                     }
 
@@ -90,7 +95,7 @@ public class DonateCommand implements CommandExecutor {
                     this.redeemItem(player, i, am);
                     return true;
 				}
-
+                // Redeem all material
 				if (args.length == 1 && plugin.util.isMaterial(args[0])) {
                     ItemStack item = Items.itemByString(args[0]).toStack();
                     try {
@@ -113,17 +118,18 @@ public class DonateCommand implements CommandExecutor {
                     }
 					return true;
 				}
-
+                // List materials
 				if (args.length >= 1 && args[0].equalsIgnoreCase("list")) {
 					this.redeemList(player, args);
                     return true;
 				}
-				
+				// Help command
 				if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
 					plugin.util.help(player);
 					return true;
 				}
 			}
+            // Reached here, send invalid command usage message
             player.sendMessage(plugin.pre + ChatColor.RED + "Invalid command usage");
             plugin.util.help(player);
 			return false;
@@ -135,7 +141,7 @@ public class DonateCommand implements CommandExecutor {
 		}
 		return false;
 	}
-    
+    // Methods
     private void donate(Player player) {
         if (player.getItemInHand().clone().getType().equals(Material.AIR)) {
             player.sendMessage(plugin.pre + ChatColor.RED + "There's nothing in your hand.");
@@ -146,6 +152,10 @@ public class DonateCommand implements CommandExecutor {
     }
     
     private void donate(Player player, int am) {
+        if (player.getItemInHand().clone().getType().equals(Material.AIR)) {
+            player.sendMessage(plugin.pre + ChatColor.RED + "There's nothing in your hand.");
+            return;
+        }
         if (player.getItemInHand().clone().getAmount() < am) {
             player.sendMessage(plugin.pre + ChatColor.RED + "You don't have enough of that item in your hand");
             return;
@@ -156,26 +166,29 @@ public class DonateCommand implements CommandExecutor {
     }
     
     private void donate(Player player, ItemStack i) {
-
-        ItemStack item = i;
-        if (plugin.util.isBlacklisted(Items.itemByStack(item).getName())) {
+        if (!plugin.util.isSupported(i)) {
+            player.sendMessage(plugin.pre + ChatColor.RED + "That Item is not supported.");
+            return;
+        }
+        
+        if (plugin.util.isBlacklisted(Items.itemByStack(i).getName())) {
             player.sendMessage(plugin.pre + ChatColor.RED + "That Item is blacklisted for donation.");
             return;
         }                  
-        if (item.getDurability() < item.getType().getMaxDurability()) {
+        if (i.getDurability() < i.getType().getMaxDurability()) {
             player.sendMessage(plugin.pre + ChatColor.RED + "Please don't donate used tools and items!");
             return;
         }
-        if (!item.getEnchantments().isEmpty()) {
+        if (!i.getEnchantments().isEmpty()) {
             player.sendMessage(plugin.pre + ChatColor.RED + "Please don't donate enchanted tools and items!");
             return;
         }
 
-        new InventoryManager(player).remove(item);
+        new InventoryManager(player).remove(i);
         player.sendMessage(plugin.pre + "Thank you for donating to the Vault.");
 
         try {
-            plugin.SQL.addToVault(item);
+            plugin.SQL.addToVault(i);
         } catch (SQLException e) {
             plugin.log.severe("[Donate] Problem adding to SQL: " + e.getMessage());
         }

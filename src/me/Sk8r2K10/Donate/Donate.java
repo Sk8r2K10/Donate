@@ -39,7 +39,7 @@ public class Donate extends JavaPlugin {
 		setupChestloc();
 		SQL.loadSQLt();
 		
-		getCommand("donate").setExecutor(new DonateCommand(this));
+		getCommand("deposit").setExecutor(new DonateCommand(this));
 		getCommand("redeem").setExecutor(new DonateCommand(this));
 		getCommand("vlist").setExecutor(new DonateCommand(this));
 		if (listen) getServer().getPluginManager().registerEvents(new ButtonListener(this), this);

@@ -54,6 +54,15 @@ public class Utilities {
         return false;
     }
     
+    public boolean isSupported(ItemStack i) {
+        try {
+            Items.itemByStack(i).getName();
+        } catch (NullPointerException e) {
+            return false;
+        }
+        return true;
+    }
+    
     public int getInt(String arg) {
         if (this.isInt(arg)) {
             int i = Integer.parseInt(arg);

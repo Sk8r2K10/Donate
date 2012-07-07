@@ -5,16 +5,16 @@ version: 0.1a
 description: Donation and redemption plugin
 softdepend: [Vault]
 commands:
-  donate:
-    description: Donate item in hand to Donation vault
+  deposit:
+    description: Deposit item in hand to Donation vault
   redeem:
     description: Redeem an item from Donation vault
   vlist:
     description: Returns a list of vault contents (Console only)
 permissions:
-  donate.donate:
+  deposit.deposit:
     description: Allows users to donate
     default: true
-  donate.redeem:
+  deposit.redeem:
     description: Allows users to take items from vault
     default: op
